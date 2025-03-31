@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { IEvento } from '../../interfaces/IEvento';
+// import { IEvento } from '../../interfaces/IEvento';
 import style from './Formulario.module.scss';
-import { obterId } from '../../util';
-import { useSetRecoilState } from 'recoil';
-import { listaDeEventosState } from '../../state/atom';
+// import { obterId } from '../../util';
+import useAdicionarEvento from '../../state/hooks/useAdicionarEvento';
+// import { useSetRecoilState } from 'recoil';
+// import { listaDeEventosState } from '../../state/atom';
 
-// const Formulario: React.FC<{ aoSalvar: (evento: IEvento) => void }> = ({ aoSalvar }) => {
 const Formulario: React.FC = () => {
-  const setListaIdEventos = useSetRecoilState<IEvento[]>(listaDeEventosState);
+  // const setListaIdEventos = useSetRecoilState<IEvento[]>(listaDeEventosState);
+  const adicionarEvento = useAdicionarEvento();
   const [descricao, setDescricao] = useState('');
   const [dataInicio, setDataInicio] = useState('');
   const [horaInicio, setHoraInicio] = useState('');
@@ -21,25 +22,27 @@ const Formulario: React.FC = () => {
 
   const submeterForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // aoSalvar({
-    const evento = {
-      id: obterId(),
-      descricao,
-      inicio: montarData(dataInicio, horaInicio),
-      fim: montarData(dataFim, horaFim),
-      completo: false
-    };
-    setListaIdEventos(listaAntiga => [...listaAntiga, evento]);
-    // Essa instrução de cima está fazendo a mesma coisa que a função abaixo, mas de forma mais simples
-    // function (listaAntiga: IEvento[]) {
-    //   return [...listaAntiga, evento];
-    // }
 
-    setDescricao('');
-    setDataInicio('');
-    setHoraInicio('');
-    setDataFim('');
-    setHoraFim('');
+    try {
+      const evento = {
+        // id: obterId(),
+        descricao,
+        inicio: montarData(dataInicio, horaInicio),
+        fim: montarData(dataFim, horaFim),
+        completo: false
+      };
+
+      adicionarEvento(evento);
+
+      setDescricao('');
+      setDataInicio('');
+      setHoraInicio('');
+      setDataFim('');
+      setHoraFim('');
+
+    } catch (erro) {
+      alert(erro);
+    }
   }
   return (
     <form className={style.Formulario} onSubmit={submeterForm}>
