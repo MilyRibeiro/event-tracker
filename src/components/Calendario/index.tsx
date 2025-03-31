@@ -7,6 +7,9 @@ import 'kalend/dist/styles/index.css';
 // import { listaDeEventosState } from '../../state/atom';
 import useAtualizarEvento from '../../state/hooks/useAtualizarEvento';
 import useListaDeEventos from '../../state/hooks/useListaDeEventos';
+import { filtroDeEventos } from '../../state/atom';
+import { useRecoilValue } from 'recoil';
+import { IFiltroDeEventos } from '../../interfaces/IFiltroDeEventos';
 
 interface IKalendEvento {
   id: number
@@ -20,7 +23,16 @@ const Calendario: React.FC = () => {
 
   const eventosKalend = new Map<string, IKalendEvento[]>();
   // const eventos = useRecoilValue(listaDeEventosState);
-  const eventos = useListaDeEventos();
+  // const eventos = useListaDeEventos();
+  const todosOsEventos = useListaDeEventos();
+  const filtro = useRecoilValue<IFiltroDeEventos>(filtroDeEventos);
+  const eventos = todosOsEventos.filter(evento => {
+    if (!filtro.data) {
+      return true;
+    }
+    const ehOMesmoDia = filtro.data.toISOString().slice(0, 10) === evento.inicio.toISOString().slice(0, 10);
+    return ehOMesmoDia;
+  });
   const atualizarEvento = useAtualizarEvento();
 
   eventos.forEach(evento => {
